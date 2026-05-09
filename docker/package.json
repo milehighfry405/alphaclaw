@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@chrysb/alphaclaw": "^0.9.14"
+    "@chrysb/alphaclaw": "^0.9.15"
   }
 }
