@@ -1,6 +1,6 @@
 FROM node:22-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git curl procps cron tini \
+    ca-certificates git curl procps cron tini \
     python3 jq \
     libglib2.0-0 libnspr4 libnss3 \
     libatk1.0-0 libatk-bridge2.0-0 \
@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgbm1 libcairo2 libpango-1.0-0 libasound2 \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY package.json ./
-RUN npm install --omit=dev
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 ENV PATH="/data/.openclaw/bin:/data/.bun/bin:/app/node_modules/.bin:$PATH"
 ENV ALPHACLAW_ROOT_DIR=/data
 ENV OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
