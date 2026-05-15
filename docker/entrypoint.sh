@@ -1,10 +1,21 @@
 #!/bin/sh
 # Symlink volume-backed paths into ephemeral /root/ so tools find them after restart
+export GSTACK_HOME="${GSTACK_HOME:-/data/.openclaw/.gstack}"
 ln -sfn /data/.gbrain /root/.gbrain
-ln -sfn /data/.openclaw/gstack-home /root/.gstack
+ln -sfn "$GSTACK_HOME" /root/.gstack
 ln -sfn /data/.claude /root/.claude
 export OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
 export PATH="/data/.openclaw/bin:/data/.bun/bin:$PATH"
+
+# Keep Claude Code's GStack skill link durable across image rebuilds. The
+# actual software checkout lives on the /data volume; this only repairs the
+# Claude skill entrypoint when the ephemeral container filesystem is recreated.
+if [ -d /data/.openclaw/tools/gstack ]; then
+  mkdir -p /data/.claude/skills
+  if [ -L /data/.claude/skills/gstack ] || [ ! -e /data/.claude/skills/gstack ]; then
+    ln -sfn /data/.openclaw/tools/gstack /data/.claude/skills/gstack
+  fi
+fi
 
 # Trust the persistent brain checkout even when container UID/GID changes across rebuilds.
 git config --global --add safe.directory /data/brain || true

@@ -14,7 +14,7 @@ RUN npm ci --omit=dev
 ENV PATH="/data/.openclaw/bin:/data/.bun/bin:/app/node_modules/.bin:$PATH"
 ENV ALPHACLAW_ROOT_DIR=/data
 ENV OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
-ENV GSTACK_HOME=/data/.openclaw/gstack-home
+ENV GSTACK_HOME=/data/.openclaw/.gstack
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 EXPOSE 3000
