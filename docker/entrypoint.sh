@@ -1,11 +1,27 @@
 #!/bin/sh
 # Symlink volume-backed paths into ephemeral /root/ so tools find them after restart
 export GSTACK_HOME="${GSTACK_HOME:-/data/.openclaw/.gstack}"
+export CODEX_HOME="${CODEX_HOME:-/data/.codex}"
 ln -sfn /data/.gbrain /root/.gbrain
 ln -sfn "$GSTACK_HOME" /root/.gstack
+mkdir -p "$CODEX_HOME"
+ln -sfn "$CODEX_HOME" /root/.codex
 ln -sfn /data/.claude /root/.claude
 export OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
-export PATH="/data/.openclaw/bin:/data/.bun/bin:$PATH"
+export PATH="/data/.openclaw/tools/gstack/bin:/data/.openclaw/bin:/data/.bun/bin:$PATH"
+
+# Keep Codex CLI available to GStack/Claude Code after image rebuilds. Prefer
+# the volume-backed npm install when present, fall back to the image-level
+# install, and repair the volume install only if both are missing.
+mkdir -p /data/.openclaw/bin /data/.openclaw/npm
+if [ -x /data/.openclaw/npm/node_modules/.bin/codex ]; then
+  ln -sfn /data/.openclaw/npm/node_modules/.bin/codex /data/.openclaw/bin/codex
+elif [ -x /usr/local/bin/codex ]; then
+  ln -sfn /usr/local/bin/codex /data/.openclaw/bin/codex
+else
+  npm install --prefix /data/.openclaw/npm @openai/codex@0.130.0 >/var/log/codex-install.log 2>&1 \
+    && ln -sfn /data/.openclaw/npm/node_modules/.bin/codex /data/.openclaw/bin/codex || true
+fi
 
 # Keep Claude Code's GStack skill link durable across image rebuilds. The
 # actual software checkout lives on the /data volume; this only repairs the
