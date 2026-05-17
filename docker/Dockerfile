@@ -12,6 +12,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 RUN npm install -g @openai/codex@0.130.0
+RUN npm install -g @anthropic-ai/claude-code
 ENV PATH="/data/.openclaw/bin:/data/.bun/bin:/app/node_modules/.bin:$PATH"
 ENV ALPHACLAW_ROOT_DIR=/data
 ENV OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json

@@ -7,6 +7,8 @@ ln -sfn "$GSTACK_HOME" /root/.gstack
 mkdir -p "$CODEX_HOME"
 ln -sfn "$CODEX_HOME" /root/.codex
 ln -sfn /data/.claude /root/.claude
+mkdir -p /data/.local
+ln -sfn /data/.local /root/.local
 export OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
 export PATH="/data/.openclaw/tools/gstack/bin:/data/.openclaw/bin:/data/.bun/bin:$PATH"
 
@@ -21,6 +23,16 @@ elif [ -x /usr/local/bin/codex ]; then
 else
   npm install --prefix /data/.openclaw/npm @openai/codex@0.130.0 >/var/log/codex-install.log 2>&1 \
     && ln -sfn /data/.openclaw/npm/node_modules/.bin/codex /data/.openclaw/bin/codex || true
+fi
+
+# Keep Claude Code available across rebuilds and make auto-updates persist.
+# The native updater writes to ~/.local/share/claude/versions/; ~/.local is
+# symlinked to /data/.local (volume-backed) above so those writes survive
+# container restarts and rebuilds. On first boot after a clean rebuild the
+# image-level npm global (/usr/local/bin/claude) is the fallback; the wrapper
+# at /data/.openclaw/bin/claude handles the preference order.
+if [ ! -x /root/.local/bin/claude ] && [ ! -x /usr/local/bin/claude ]; then
+  npm install -g @anthropic-ai/claude-code >/var/log/claude-install.log 2>&1 || true
 fi
 
 # Keep Claude Code's GStack skill link durable across image rebuilds. The
