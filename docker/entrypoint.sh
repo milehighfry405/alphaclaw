@@ -10,7 +10,7 @@ ln -sfn /data/.claude /root/.claude
 mkdir -p /data/.local
 ln -sfn /data/.local /root/.local
 export OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
-export PATH="/data/.openclaw/tools/gstack/bin:/data/.openclaw/bin:/data/.bun/bin:$PATH"
+export PATH="/root/.local/bin:/data/.openclaw/tools/gstack/bin:/data/.openclaw/bin:/data/.bun/bin:$PATH"
 
 # Keep Codex CLI available to GStack/Claude Code after image rebuilds. Prefer
 # the volume-backed npm install when present, fall back to the image-level
