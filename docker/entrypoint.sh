@@ -7,6 +7,7 @@ ln -sfn "$GSTACK_HOME" /root/.gstack
 mkdir -p "$CODEX_HOME"
 ln -sfn "$CODEX_HOME" /root/.codex
 ln -sfn /data/.claude /root/.claude
+ln -sfn /data/.claude.json /root/.claude.json
 mkdir -p /data/.local
 ln -sfn /data/.local /root/.local
 export OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
